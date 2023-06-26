@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "320383736865",
+    "project_id": "graduation-project-38819",
+    "storage_bucket": "graduation-project-38819.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:320383736865:android:220107e830e35ef9c91760",
+        "android_client_info": {
+          "package_name": "com.testtflite.model.testtemp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "320383736865-23qvqe2n20j4d315samitsm52s37sdq4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.testtflite.model.testtemp",
+            "certificate_hash": "f1462f5908ebf78a293fc5ed5a1ddfa2b7664cd6"
+          }
+        },
+        {
+          "client_id": "320383736865-5229mptqj381p3u44j30fmin5imei8m4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaBTQ4ky6BrviGCsCaNL__gsQIWH3Kvyk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "320383736865-5229mptqj381p3u44j30fmin5imei8m4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:320383736865:android:b751d3b3a8ce2ac3c91760",
+        "android_client_info": {
+          "package_name": "com.volunteering.volunteer_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "320383736865-5229mptqj381p3u44j30fmin5imei8m4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaBTQ4ky6BrviGCsCaNL__gsQIWH3Kvyk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "320383736865-5229mptqj381p3u44j30fmin5imei8m4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
