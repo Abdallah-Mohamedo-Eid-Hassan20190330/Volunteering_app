@@ -179,7 +179,7 @@ class SignUp extends StatelessWidget {
                                 context: context,
                                 nationalId: national_id.text.trim(),
                                 fullName: full_name.text.trim(),
-                                phone: phone.text.trim(),
+                                phone: "+2${phone.text.trim()}",
                                 key: "",
                               );
                             }
