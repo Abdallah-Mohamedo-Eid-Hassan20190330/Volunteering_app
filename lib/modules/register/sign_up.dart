@@ -174,10 +174,14 @@ class SignUp extends StatelessWidget {
                                 ? true
                                 : false) {
                               FirebaseHelper.signUp(
-                                      email: email.text,
-                                      password: password.text,
-                                      context: context)
-                                  .then((val) {});
+                                email: email.text.trim(),
+                                password: password.text.trim(),
+                                context: context,
+                                nationalId: national_id.text.trim(),
+                                fullName: full_name.text.trim(),
+                                phone: phone.text.trim(),
+                                key: "",
+                              );
                             }
                           },
                           child: Text(

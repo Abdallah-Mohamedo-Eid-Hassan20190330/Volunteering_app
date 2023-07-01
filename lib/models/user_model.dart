@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   String nationalId = '';
   String fullName = '';
@@ -26,10 +28,20 @@ class UserModel {
 
   static UserModel fromJson(Map<String, dynamic> json) {
     return UserModel(
-      nationalId: json['nationalId'],
-      fullName: json['fullName'],
-      phone: json['phone'],
-      key: json['key'],
+      nationalId: json['nationalId'] as String? ?? '',
+      fullName: json['fullName'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
+      key: json['key'] as String? ?? '',
+    );
+  }
+
+  factory UserModel.fromDocumentSnapshot(DocumentSnapshot snapshot) {
+    final json = snapshot.data() as Map<String, dynamic>;
+    return UserModel(
+      nationalId: json['nationalId'] as String? ?? '',
+      fullName: json['fullName'] as String? ?? '',
+      phone: json['phone'] as String? ?? '',
+      key: json['key'] as String? ?? '',
     );
   }
 }

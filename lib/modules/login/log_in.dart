@@ -93,8 +93,8 @@ class Login extends StatelessWidget {
                       child: MaterialButton(
                         onPressed: () {
                           FirebaseHelper.login(
-                              email: email.text,
-                              password: password.text,
+                              email: email.text.trim(),
+                              password: password.text.trim(),
                               context: context);
                         },
                         child: Text(
