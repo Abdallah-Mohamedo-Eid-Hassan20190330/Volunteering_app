@@ -1,5 +1,5 @@
 class UserLocation {
-  int _latitude, _longitude;
+  double _latitude, _longitude;
 
   UserLocation(this._latitude, this._longitude);
 
@@ -9,9 +9,9 @@ class UserLocation {
     _longitude = value;
   }
 
-  int get latitude => _latitude;
+  double get latitude => _latitude;
 
-  set latitude(int value) {
+  set latitude(double value) {
     _latitude = value;
   }
 

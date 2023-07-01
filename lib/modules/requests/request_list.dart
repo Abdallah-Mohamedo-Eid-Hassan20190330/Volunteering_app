@@ -5,8 +5,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:volunteer_app/firebase/firebase_helper.dart';
 import 'package:volunteer_app/models/Request.dart';
 
-import '../../models/user_model.dart';
-
 class RequestList extends StatefulWidget {
   @override
   State<RequestList> createState() => _RequestListState();
@@ -104,16 +102,24 @@ class _RequestListState extends State<RequestList> {
                     Container(
                       width: double.infinity,
                       padding: EdgeInsets.all(10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(users[index].blindData.fullName),
-                          const SizedBox(
-                            width: 20,
-                          ),
-                          Text("${users[index].blindData.nationalId}"),
-                        ],
+                      child: Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              users[index].blindData.fullName,
+                              overflow: TextOverflow.clip,
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            Text(
+                              "${users[index].blindData.phone}",
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                     Row(
