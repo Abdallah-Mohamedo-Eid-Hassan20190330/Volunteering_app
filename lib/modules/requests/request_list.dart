@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:volunteer_app/modules/requests/MapScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -116,24 +116,8 @@ class _RequestListState extends State<RequestList> {
         padding: EdgeInsets.all(10),
         child: Row(
           children: [
-            Container(
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Colors.grey,
-                  width: 2,
-                ),
-              ),
-              child: CircleAvatar(
-                radius: 40,
-                backgroundColor: Colors.white,
-                child: Icon(
-                  Icons.person,
-                  size: 50,
-                  color: Colors.grey,
-                ),
-              ),
-            ),
+            // Rest of your code...
+
             const SizedBox(
               width: 20,
             ),
@@ -167,8 +151,7 @@ class _RequestListState extends State<RequestList> {
                       GestureDetector(
                         onTap: () {
                           if (!isAccepted) {
-                            acceptRequest(
-                                users[index].blindData.nationalId, index);
+                            acceptRequest(users[index].blindData.nationalId, index);
                           }
                         },
                         child: AnimatedContainer(
@@ -202,7 +185,19 @@ class _RequestListState extends State<RequestList> {
                         ),
                         child: MaterialButton(
                           onPressed: () {
-                            // Handle "View on Map" button press
+                            if (isAccepted) {
+                              double blindPersonLatitude = users[index].blindLocation.latitude;
+                              double blindPersonLongitude = users[index].blindLocation.longitude;
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MapScreen(
+                                    blindPersonLatitude: blindPersonLatitude,
+                                    blindPersonLongitude: blindPersonLongitude,
+                                  ),
+                                ),
+                              );
+                            }
                           },
                           child: Text("View on Map"),
                         ),
@@ -220,4 +215,5 @@ class _RequestListState extends State<RequestList> {
       ),
     );
   }
+
 }

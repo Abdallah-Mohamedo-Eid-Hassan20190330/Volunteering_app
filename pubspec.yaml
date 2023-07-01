@@ -41,6 +41,9 @@ dependencies:
   fluttertoast: ^8.2.2
   cloud_firestore: ^4.8.2
 
+  flutter_map: ^0.13.1
+  geolocator: ^8.0.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
