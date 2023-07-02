@@ -40,9 +40,10 @@ dependencies:
   firebase_core: ^2.14.0
   fluttertoast: ^8.2.2
   cloud_firestore: ^4.8.2
-
-  flutter_map: ^0.13.1
+  firebase_database: ^10.0.0
+  flutter_map: ^2.2.0
   geolocator: ^8.0.1
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   flutter_test:
