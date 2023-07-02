@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:volunteer_app/models/Request.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class RequestList extends StatefulWidget {
   @override
@@ -83,6 +84,76 @@ class _RequestListState extends State<RequestList> {
     }
   }
 
+  void sendResponseToServer(double distance, String duration , String blindNationalId) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    FirebaseAuth auth = FirebaseAuth.instance;
+
+    // Get the current user's UID
+    String volunteerUserId = auth.currentUser!.uid;
+
+    // Fetch the volunteer's information from Firestore based on their UID
+    QuerySnapshot volunteerSnapshot = await db
+        .collection('Volunteers')
+        .where('key', isEqualTo: volunteerUserId)
+        .get();
+
+    if (volunteerSnapshot.docs.isNotEmpty) {
+      // Retrieve the volunteer's information
+      DocumentSnapshot volunteerDocument = volunteerSnapshot.docs.first;
+      String volunteerNationalId = volunteerDocument['nationalId'];
+      String volunteerName = volunteerDocument['fullName'];
+      String volunteerPhone = volunteerDocument['phone'];
+
+      // Retrieve the blind person's information
+      // Replace this with the appropriate logic to retrieve the blind person's information
+
+      // Create a new document in the "Responses" collection
+      db.collection('Responses').add({
+        'blindId': blindNationalId,
+        'volunteerId': volunteerNationalId,
+        'volunteerName': volunteerName,
+        'volunteerPhone': volunteerPhone,
+        'routeData': {
+          'distance': distance,
+          'duration': duration,
+        },
+      }).then((value) {
+        Fluttertoast.showToast(
+          msg: 'Response sent successfully!',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.green,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+      }).catchError((error) {
+        Fluttertoast.showToast(
+          msg: 'Failed to send response. ${error.toString()}',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0,
+        );
+        print(error);
+      });
+    } else {
+      Fluttertoast.showToast(
+        msg: 'Volunteer data not found!',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  }
+
+
+
   @override
   void initState() {
     super.initState();
@@ -149,11 +220,34 @@ class _RequestListState extends State<RequestList> {
                   Row(
                     children: [
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
                           if (!isAccepted) {
-                            acceptRequest(users[index].blindData.nationalId, index);
+                            double blindPersonLatitude = users[index].blindLocation.latitude;
+                            double blindPersonLongitude = users[index].blindLocation.longitude;
+
+                            var result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MapScreen(
+                                  blindPersonLatitude: blindPersonLatitude,
+                                  blindPersonLongitude: blindPersonLongitude,
+                                ),
+                              ),
+                            );
+
+                            if (result != null && result is Map<String, dynamic>) {
+                              acceptRequest(users[index].blindData.nationalId, index);
+                              double distance = result['distance'];
+                              String eta = result['eta'];
+                              sendResponseToServer(distance, eta , users[index].blindData.nationalId);
+                            }
+                            else {
+                              // Handle the case when the result is null or not of the expected type
+                              // You can display an error message or perform other actions as needed
+                            }
                           }
                         },
+
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           height: 40,
@@ -185,19 +279,17 @@ class _RequestListState extends State<RequestList> {
                         ),
                         child: MaterialButton(
                           onPressed: () {
-                            if (isAccepted) {
-                              double blindPersonLatitude = users[index].blindLocation.latitude;
-                              double blindPersonLongitude = users[index].blindLocation.longitude;
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => MapScreen(
-                                    blindPersonLatitude: blindPersonLatitude,
-                                    blindPersonLongitude: blindPersonLongitude,
-                                  ),
+                            double blindPersonLatitude = users[index].blindLocation.latitude;
+                            double blindPersonLongitude = users[index].blindLocation.longitude;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MapScreen(
+                                  blindPersonLatitude: blindPersonLatitude,
+                                  blindPersonLongitude: blindPersonLongitude,
                                 ),
-                              );
-                            }
+                              ),
+                            );
                           },
                           child: Text("View on Map"),
                         ),
@@ -215,5 +307,4 @@ class _RequestListState extends State<RequestList> {
       ),
     );
   }
-
 }

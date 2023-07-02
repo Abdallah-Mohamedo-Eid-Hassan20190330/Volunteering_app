@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart' as latLng;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MapScreen extends StatefulWidget {
   final double blindPersonLatitude;
   final double blindPersonLongitude;
 
-  MapScreen({required this.blindPersonLatitude, required this.blindPersonLongitude});
+  MapScreen({
+    required this.blindPersonLatitude,
+    required this.blindPersonLongitude,
+  });
 
   @override
   _MapScreenState createState() => _MapScreenState();
@@ -16,13 +20,15 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   double? currentLatitude;
   double? currentLongitude;
-  double distance = 0.0;
-  String estimatedTimeOfArrival = '';
+  bool isButtonPressed = false;
+  late String requestIdentifier;
 
   @override
   void initState() {
     super.initState();
+    requestIdentifier = DateTime.now().toString();
     _getCurrentLocation();
+    _loadButtonState();
   }
 
   Future<void> _getCurrentLocation() async {
@@ -31,25 +37,48 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       currentLatitude = position.latitude;
       currentLongitude = position.longitude;
-      _calculateDistance();
-      _calculateETA();
     });
   }
 
-  void _calculateDistance() {
-    if (currentLatitude != null && currentLongitude != null) {
-      latLng.LatLng userLocation = latLng.LatLng(currentLatitude!, currentLongitude!);
-      latLng.LatLng blindPersonLocation = latLng.LatLng(widget.blindPersonLatitude, widget.blindPersonLongitude);
-      distance = latLng.Distance().as(latLng.LengthUnit.Kilometer, userLocation, blindPersonLocation);
-    }
+  Future<void> _loadButtonState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isButtonPressed = prefs.getBool(requestIdentifier) ?? false;
+    });
   }
 
-  void _calculateETA() {
-    // Calculate the estimated time of arrival based on distance and average travel speed
-    double averageSpeed = 50; // Assume average speed in km/h
-    double estimatedTimeInHours = distance / averageSpeed;
-    int estimatedTimeInMinutes = (estimatedTimeInHours * 60).round();
-    estimatedTimeOfArrival = '$estimatedTimeInMinutes minutes';
+  Future<void> _saveButtonState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(requestIdentifier, isButtonPressed);
+  }
+
+  double calculateDistance() {
+    if (currentLatitude != null && currentLongitude != null) {
+      final userLocation = latLng.LatLng(currentLatitude!, currentLongitude!);
+      final blindPersonLocation =
+      latLng.LatLng(widget.blindPersonLatitude, widget.blindPersonLongitude);
+      return latLng.Distance().as(
+          latLng.LengthUnit.Kilometer, userLocation, blindPersonLocation);
+    }
+    return 0.0;
+  }
+
+  String calculateETA() {
+    final distance = calculateDistance();
+    final averageSpeed = 50; // Assume average speed in km/h
+    final estimatedTimeInHours = distance / averageSpeed;
+    final estimatedTimeInMinutes = (estimatedTimeInHours * 60).round();
+    return '$estimatedTimeInMinutes minutes';
+  }
+
+  void confirmButtonPressed() {
+    final distance = calculateDistance();
+    final eta = calculateETA();
+    Navigator.pop(context, {'distance': distance, 'eta': eta});
+    setState(() {
+      isButtonPressed = true;
+    });
+    _saveButtonState();
   }
 
   @override
@@ -96,7 +125,8 @@ class _MapScreenState extends State<MapScreen> {
               Marker(
                 width: 40.0,
                 height: 40.0,
-                point: latLng.LatLng(widget.blindPersonLatitude, widget.blindPersonLongitude),
+                point: latLng.LatLng(
+                    widget.blindPersonLatitude, widget.blindPersonLongitude),
                 builder: (ctx) => Container(
                   child: Icon(
                     Icons.location_on,
@@ -116,13 +146,20 @@ class _MapScreenState extends State<MapScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              'Distance: ${distance.toStringAsFixed(2)} km',
+              'Distance: ${calculateDistance().toStringAsFixed(2)} km',
               style: TextStyle(fontSize: 18.0),
             ),
             SizedBox(height: 8.0),
             Text(
-              'Estimated Time of Arrival: $estimatedTimeOfArrival',
+              'Estimated Time of Arrival: ${calculateETA()}',
               style: TextStyle(fontSize: 18.0),
+            ),
+            Visibility(
+              visible: !isButtonPressed,
+              child: ElevatedButton(
+                onPressed: confirmButtonPressed,
+                child: Text('Confirm'),
+              ),
             ),
           ],
         ),
